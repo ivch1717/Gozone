@@ -1,6 +1,6 @@
 package com.example.payments.domain;
 
-import com.example.payments.db.AccountMapper;
+import com.example.payments.db.AccountDbMapper;
 import com.example.payments.db.AccountsEntity;
 import com.example.payments.db.AccountsRepository;
 import jakarta.persistence.EntityNotFoundException;
@@ -12,9 +12,9 @@ import java.util.UUID;
 @Service
 public class PaymentsService{
     private final AccountsRepository accountsRepository;
-    private final AccountMapper mapper;
+    private final AccountDbMapper mapper;
 
-    public PaymentsService(AccountsRepository accountsRepository, AccountMapper mapper){
+    public PaymentsService(AccountsRepository accountsRepository, AccountDbMapper mapper){
         this.accountsRepository = accountsRepository;
         this.mapper = mapper;
     }

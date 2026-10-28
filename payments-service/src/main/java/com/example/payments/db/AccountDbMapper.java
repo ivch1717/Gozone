@@ -1,11 +1,10 @@
 package com.example.payments.db;
 
 import com.example.payments.domain.Account;
-import jakarta.validation.Valid;
 import org.springframework.stereotype.Component;
 
 @Component
-public class AccountMapper {
+public class AccountDbMapper {
     public AccountsEntity toEntity(Account account){
         return new AccountsEntity(account.getId(), account.getUserId(), account.getBalance());
     }
