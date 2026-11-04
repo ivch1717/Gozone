@@ -2,6 +2,8 @@ package com.example.payments.api;
 
 import com.example.payments.api.dtos.AccountResponse;
 import com.example.payments.api.dtos.CreateAccountRequest;
+import com.example.payments.api.dtos.TopUpRequest;
+import com.example.payments.domain.Account;
 import com.example.payments.domain.PaymentsService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -27,7 +29,7 @@ public class PaymentsController {
         this.accountApiMapper = accountApiMapper;
     }
 
-    @PostMapping("/accounts")
+    @PostMapping("/account")
     public ResponseEntity<AccountResponse> createAccount(
             @Valid @RequestBody CreateAccountRequest request
     ){
@@ -41,5 +43,17 @@ public class PaymentsController {
             @RequestParam("userId") UUID userId) {
 
         return ResponseEntity.ok(paymentsService.getBalance(userId));
+    }
+
+    @PostMapping("/accounts/{userId}/top-ups")
+    public ResponseEntity<AccountResponse> topUpAccount(
+            @PathVariable("userId") UUID userId,
+            @Valid @RequestBody TopUpRequest request) {
+
+        Account account = paymentsService.topUpAccount(
+                userId, request.amount());
+
+        return ResponseEntity.ok(
+                accountApiMapper.toAccountResponse(account));
     }
 }

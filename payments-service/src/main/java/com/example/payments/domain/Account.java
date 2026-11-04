@@ -34,4 +34,13 @@ public class Account {
     public BigDecimal getBalance() {
         return balance;
     }
+
+    public void topUp(BigDecimal amount){
+        if (amount == null || amount.signum() <= 0) {
+            throw new IllegalArgumentException(
+                    "Сумма должна быть положительной");
+        }
+
+        balance = balance.add(amount);
+    }
 }

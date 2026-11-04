@@ -37,4 +37,17 @@ public class PaymentsService{
                         new EntityNotFoundException("Счёт пользователя не найден"))
                 .getBalance();
     }
+
+    public Account topUpAccount(UUID userId, BigDecimal amount) {
+        AccountsEntity entity = accountsRepository.findByUserId(userId)
+                .orElseThrow(() ->
+                        new EntityNotFoundException("Счёт пользователя не найден"));
+
+        Account domain = mapper.toDomain(entity);
+        domain.topUp(amount);
+
+        entity.setBalance(domain.getBalance());
+
+        return domain;
+    }
 }
