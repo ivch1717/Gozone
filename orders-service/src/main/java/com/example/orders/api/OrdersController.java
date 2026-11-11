@@ -34,7 +34,7 @@ public class OrdersController {
                 request.amount(), request.description())));
     }
 
-    @GetMapping("/{userId}")
+    @GetMapping("/users/{userId}")
     public ResponseEntity<List<OrderResponse>> getAllOrders( @PathVariable("userId") UUID userId){
         return ResponseEntity.ok(ordersService.getAllOrders(userId).stream().map(mapper::toOrderResponse).toList());
     }

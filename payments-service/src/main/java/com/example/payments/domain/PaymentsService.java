@@ -4,6 +4,8 @@ import com.example.payments.db.AccountDbMapper;
 import com.example.payments.db.AccountsEntity;
 import com.example.payments.db.AccountsRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -11,6 +13,8 @@ import java.util.UUID;
 
 @Service
 public class PaymentsService{
+    private static final Logger log = LoggerFactory.getLogger(PaymentsService.class);
+
     private final AccountsRepository accountsRepository;
     private final AccountDbMapper mapper;
 
@@ -28,14 +32,18 @@ public class PaymentsService{
 
         AccountsEntity saved = accountsRepository.save(entity);
 
-        return mapper.toDomain(saved);
+        Account account = mapper.toDomain(saved);
+        log.info("Счёт создан. accountId={}", account.getId());
+        return account;
     }
 
     public BigDecimal getBalance(UUID userId){
-        return accountsRepository.findByUserId(userId)
+        AccountsEntity account = accountsRepository.findByUserId(userId)
                 .orElseThrow(() ->
-                        new EntityNotFoundException("Счёт пользователя не найден"))
-                .getBalance();
+                        new EntityNotFoundException("Счёт пользователя не найден"));
+
+        log.debug("Получен баланс счёта. accountId={}", account.getId());
+        return account.getBalance();
     }
 
     public Account topUpAccount(UUID userId, BigDecimal amount) {
@@ -46,8 +54,10 @@ public class PaymentsService{
         Account domain = mapper.toDomain(entity);
         domain.topUp(amount);
 
+        log.info("Принят запрос на пополнение счёта. accountId={}", entity.getId());
         entity.setBalance(domain.getBalance());
-
+        accountsRepository.save(entity);
+        log.info("Счёт пополнен. accountId={}", entity.getId());
         return domain;
     }
 }
