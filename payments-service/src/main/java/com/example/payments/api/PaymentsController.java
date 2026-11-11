@@ -4,7 +4,7 @@ import com.example.payments.api.dtos.AccountResponse;
 import com.example.payments.api.dtos.CreateAccountRequest;
 import com.example.payments.api.dtos.TopUpRequest;
 import com.example.payments.domain.Account;
-import com.example.payments.domain.PaymentsService;
+import com.example.payments.application.PaymentsService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

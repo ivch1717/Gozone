@@ -1,4 +1,6 @@
-package com.example.payments.domain;
+package com.example.payments.application;
+
+import com.example.payments.domain.Account;
 
 import com.example.payments.db.AccountDbMapper;
 import com.example.payments.db.AccountsEntity;

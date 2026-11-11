@@ -2,7 +2,7 @@ package com.example.orders.api;
 
 import com.example.orders.api.dtos.CreateOrderRequest;
 import com.example.orders.api.dtos.OrderResponse;
-import com.example.orders.domain.OrdersService;
+import com.example.orders.application.OrdersService;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
