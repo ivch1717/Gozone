@@ -1,6 +1,8 @@
 package com.example.payments.db;
 
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -15,14 +17,8 @@ public interface AccountsRepository extends JpaRepository<AccountsEntity, UUID> 
 
     Optional<AccountsEntity> findByUserId(UUID userId);
 
-//    @Modifying
-//    @Query("""
-//    UPDATE AccountsEntity a
-//    SET a.balance = a.balance + :amount
-//    WHERE a.userId = :userId
-//    """)
-//    int increaseBalanceByUserId(
-//            @Param("userId") UUID userId,
-//            @Param("amount") BigDecimal amount
-//    );
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT a FROM AccountsEntity a WHERE a.userId = :userId")
+    Optional<AccountsEntity> findByUserIdForUpdate(
+            @Param("userId") UUID userId);
 }

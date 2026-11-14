@@ -51,6 +51,28 @@ public class OrdersService {
         return orderDbMapper.toDomain(saved);
     }
 
+    @Transactional
+    public boolean applyPaymentResult(UUID orderId, OrderStatus status) {
+        if (status != OrderStatus.PAID && status != OrderStatus.CANCELED) {
+            throw new IllegalArgumentException("Некорректный результат оплаты: " + status);
+        }
+
+        OrderEntity entity = ordersRepository.findByIdForUpdate(orderId)
+                .orElseThrow(() -> new EntityNotFoundException("Заказ не найден: " + orderId));
+        if (entity.getStatus() != OrderStatus.NEW) {
+            return false;
+        }
+
+        Order order = orderDbMapper.toDomain(entity);
+        if (status == OrderStatus.PAID) {
+            order.markPaid();
+        } else {
+            order.markCanceled();
+        }
+        entity.setStatus(order.getStatus());
+        return true;
+    }
+
     public List<Order> getAllOrders(UUID userId) {
         List<Order> orders = ordersRepository.findAllByUserId(userId)
                 .stream()

@@ -9,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.UUID;
@@ -48,18 +49,19 @@ public class PaymentsService{
         return account.getBalance();
     }
 
+    @Transactional
     public Account topUpAccount(UUID userId, BigDecimal amount) {
-        AccountsEntity entity = accountsRepository.findByUserId(userId)
+        AccountsEntity entity = accountsRepository
+                .findByUserIdForUpdate(userId)
                 .orElseThrow(() ->
-                        new EntityNotFoundException("Счёт пользователя не найден"));
+                        new EntityNotFoundException(
+                                "Счёт пользователя не найден"));
 
-        Account domain = mapper.toDomain(entity);
-        domain.topUp(amount);
+        Account account = mapper.toDomain(entity);
+        account.topUp(amount);
 
-        log.info("Принят запрос на пополнение счёта. accountId={}", entity.getId());
-        entity.setBalance(domain.getBalance());
-        accountsRepository.save(entity);
-        log.info("Счёт пополнен. accountId={}", entity.getId());
-        return domain;
+        entity.setBalance(account.getBalance());
+
+        return account;
     }
 }

@@ -8,6 +8,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.Instant;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -28,4 +29,13 @@ public interface InboxRepository extends JpaRepository<InboxEntity, UUID> {
             @Param("orderId") UUID orderId,
             @Param("payload") String payload,
             @Param("createdAt") Instant createdAt);
+
+    @Query(value = """
+        SELECT * FROM inbox
+        WHERE status = 'NEW'
+        ORDER BY created_at, event_id
+        LIMIT 1
+        FOR UPDATE SKIP LOCKED
+        """, nativeQuery = true)
+    Optional<InboxEntity> findNextForProcessing();
 }

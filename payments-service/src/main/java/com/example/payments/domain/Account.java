@@ -43,4 +43,18 @@ public class Account {
 
         balance = balance.add(amount);
     }
+
+    public boolean tryWithdraw(BigDecimal amount) {
+        if (amount == null || amount.signum() <= 0) {
+            throw new IllegalArgumentException(
+                    "Сумма должна быть положительной");
+        }
+
+        if (balance.compareTo(amount) < 0) {
+            return false;
+        }
+
+        balance = balance.subtract(amount);
+        return true;
+    }
 }
