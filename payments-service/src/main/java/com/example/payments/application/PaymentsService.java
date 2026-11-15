@@ -1,6 +1,7 @@
 package com.example.payments.application;
 
 import com.example.payments.domain.Account;
+import com.example.payments.domain.exception.AccountAlreadyExistsException;
 
 import com.example.payments.db.AccountDbMapper;
 import com.example.payments.db.AccountsEntity;
@@ -8,6 +9,7 @@ import com.example.payments.db.AccountsRepository;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,13 +29,25 @@ public class PaymentsService{
     }
 
     public Account createAccount(UUID userId) {
+        if (accountsRepository.existsByUserId(userId)) {
+            throw new AccountAlreadyExistsException(userId);
+        }
+
         AccountsEntity entity = new AccountsEntity(
                 null,
                 userId,
                 BigDecimal.ZERO
         );
 
-        AccountsEntity saved = accountsRepository.save(entity);
+        AccountsEntity saved;
+        try {
+            saved = accountsRepository.save(entity);
+        } catch (DataIntegrityViolationException ex) {
+            if (accountsRepository.existsByUserId(userId)) {
+                throw new AccountAlreadyExistsException(userId, ex);
+            }
+            throw ex;
+        }
 
         Account account = mapper.toDomain(saved);
         log.info("Счёт создан. accountId={}", account.getId());

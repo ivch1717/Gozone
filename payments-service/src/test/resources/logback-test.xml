@@ -1,0 +1,4 @@
+<configuration>
+    <!-- Expected failure scenarios are asserted by JUnit, without noisy stack traces. -->
+    <root level="OFF" />
+</configuration>

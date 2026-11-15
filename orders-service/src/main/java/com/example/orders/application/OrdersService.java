@@ -7,13 +7,14 @@ import com.example.orders.domain.OrderStatus;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
 import java.math.BigDecimal;
 import java.time.Instant;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -73,13 +74,13 @@ public class OrdersService {
         return true;
     }
 
-    public List<Order> getAllOrders(UUID userId) {
-        List<Order> orders = ordersRepository.findAllByUserId(userId)
-                .stream()
-                .map(orderDbMapper::toDomain)
-                .toList();
+    @Transactional(readOnly = true)
+    public Page<Order> getAllOrders(UUID userId, Pageable pageable) {
+        Page<Order> orders = ordersRepository.findAllByUserId(userId, pageable)
+                .map(orderDbMapper::toDomain);
 
-        log.debug("Получены заказы. userId={}, count={}", userId, orders.size());
+        log.debug("Получена страница заказов. userId={}, page={}, count={}, total={}",
+                userId, orders.getNumber(), orders.getNumberOfElements(), orders.getTotalElements());
 
         return orders;
     }

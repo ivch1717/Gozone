@@ -22,6 +22,9 @@ public class InboxEntity {
     @Column(name = "status", nullable = false)
     private InboxStatus status;
 
+    @Column(name = "failure_reason", columnDefinition = "text")
+    private String failureReason;
+
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt = Instant.now();
 
@@ -54,6 +57,15 @@ public class InboxEntity {
 
     public Instant getCreatedAt() {
         return createdAt;
+    }
+
+    public String getFailureReason() {
+        return failureReason;
+    }
+
+    public void markFailed(String reason) {
+        this.status = InboxStatus.FAILED;
+        this.failureReason = reason;
     }
 
     public void setEventId(UUID eventId) {
