@@ -11,3 +11,6 @@
 !**/.env.example
 tmp
 output
+**/node_modules
+**/dist
+frontend
